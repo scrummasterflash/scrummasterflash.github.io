@@ -76,7 +76,7 @@ header #branding{
 
 header #branding h1{
 	margin: 0;
-	font-size: 36px;
+	font-size: 30px;
 	font-family: Georgia, "Times New Roman", Times, Serif;
 	padding-left: 20px;
 }
@@ -88,8 +88,7 @@ header #branding span{
 header nav{
 	float: right;
 	margin-top: -20px;
-	padding-right: 60px;
-	font
+	padding-right: 0px;
 }
 
 header .highlight, header .current a{
