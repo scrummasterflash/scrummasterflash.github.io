@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<meta author="jeremiah burch">
+<link rel="stylesheet" href="../WebContent/asset/css/bootstrap.min.css">
+<link rel="stylesheet" href="../WebContent/css/styles.css">
+<title>Store Locator</title>
+<style>
+	#map{
+		height:400px;
+		width:100%;
+		}
+</style>
+</head>
+
+<body>
+	<header>
+		<nav class="navbar navbar-inverse">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand" href="index.html">Jeremiah's Dynamic Website</a>
+			    </div>
+			
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav">
+			        <li><a href="index.html">Home <span class="sr-only">(current)</span></a></li>
+			        <li class="active"><a href="StoreLocator.html">Store Locator</a></li>
+			        <li><a href="SocialMediaIntegration.html">Social Media Integration</a></li>
+			        <li><a href="LinkingDynamicContent.html">Linking Dynamic Content</a></li>
+			        <li><a href="CurrencyConversion.html">Currency Conversion</a></li>
+			      </ul>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+		</nav>
+	</header>
+	<div class="row">
+		<div class="container">
+			<div class="jumbotron">
+	  			<h1>Store Locator</h1>
+	  			<p>We have SmartHomes devices in local electronic stores across the United States. To find a store near you, enter a zip code using our Store Locator feature below. Thank you for your business!</p>
+	  			<br>
+	  			<br>
+	  			<label for="zipInput">Enter a Zip Code:</label>
+         		<input type="text" id="zipInput" size="10" name="name"/>
+         		<label for="radiusSelect">Radius:</label>
+		        <select id="radiusSelect" label="Radius">
+		          <option value="30" selected>30 miles</option>
+		          <option value="20">20 miles</option>
+		          <option value="10">10 miles</option>
+		        </select>
+		        <input type="button" id="searchButton" value=Search>
+		        <br>
+		        <br>
+				<div id="map"></div>
+				<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDc36j1_T9huo4dS_OkGcQkoE3_i6N8Mvk&libraries=places"></script>
+		  		<script>
+
+					function initialize(){
+						var loc = new google.maps.LatLng(38.9072000,-77.0369000)
+		  				var options= {
+		  						zoom:12,
+		  						center:loc
+		  				}
+		  				
+						map = new google.maps.Map(document.getElementById('map'), options);
+						searchButton = document.getElementById("searchButton").onclick = searchLocations;
+						var marker = new google.maps.Marker({position: loc, map: map, title:'Hello World'});
+						
+						var request = {
+							location: loc,
+							radius: '16093',
+							types: ['electronics_store']
+						};
+						service = new google.maps.places.PlacesService(map);
+						service.nearbySearch(request, callback);
+						}
+
+					function searchLocations(){
+						var zip = document.getElementById('zipInput').value;
+						var newRequest = new XMLHttpRequest;
+						newRequest.open('GET', "https://maps.googleapis.com/maps/api/geocode/json?address=" + zip + "&key=AIzaSyDc36j1_T9huo4dS_OkGcQkoE3_i6N8Mvk", true);
+						newRequest.send(null);
+						newRequest.onreadystatechange=(e)=>{
+		  		      		var obj = JSON.parse(newRequest.responseText);
+		  		       		var objValue = obj.results[0].geometry.location;
+				  			var options= {
+				  				zoom:12,
+				  				center:objValue
+				  			}		
+					  		map = new google.maps.Map(document.getElementById('map'), options);
+							searchButton = document.getElementById("searchButton").onclick = searchLocations;	
+							var request = {
+								location: objValue,
+								radius: '16093',
+								types: ['electronics_store']
+							};
+							var node = document.getElementById("dynamicContentSpan")
+								node.innerHTML='';
+
+							service = new google.maps.places.PlacesService(map);
+							service.nearbySearch(request, callback);
+							}	
+		  		        }
+						
+					function callback(results, status){
+						if(status == google.maps.places.PlacesServiceStatus.OK){
+							for (var i=0; i < results.length; i++) {
+								createMarker(results[i]);
+								createTable(results[i]);
+							}
+						}
+					}
+
+					function createMarker(place){
+						var placeLoc = place.geometry.location;
+						var marker = new google.maps.Marker({
+							map: map, 
+							position: place.geometry.location, 
+							title: place.name
+						});
+					}
+
+					function createTable(place){
+						var divs = document.createElement("Span");
+						divs.setAttribute("id", "dynamicContentSpan")	;
+						document.getElementById("contentTable").appendChild(divs);
+						var node = document.createElement("H3");
+						node.setAttribute("id", "contentHeader")
+						var content = document.createTextNode(place.name);
+						node.appendChild(content);
+						document.getElementById("dynamicContentSpan").appendChild(node);
+						var node1 = document.createElement("LI");
+						node1.setAttribute("id", "contentListItem");
+						var content1 = document.createTextNode(place.vicinity);
+						node1.appendChild(content1);
+						document.getElementById("dynamicContentSpan").appendChild(node1);
+					}
+					
+					google.maps.event.addDomListener(window, 'load', initialize);
+				</script>
+				<br>
+				<br>
+				<div id="contentTable"></div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+	<p id="article-blob">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+	</div>
+	<div class="container-fluid">
+		<div class="footer">
+			<!-- Footer -->
+			<footer class="page-footer">
+			  <!-- Copyright -->
+			  <div class="footer-copyright text-center" id="copyright">� 2018 Copyright:
+			    <a href="index.html"> Jeremiah's Dynamic Website</a>
+			  </div>
+			  <!-- Copyright -->
+			</footer>
+			<!-- Footer -->
+		</div>
+	</div>
+	<script src="../js/jquery-3.3.1.js"></script>
+	<script src="../WebContent/asset/js/bootstrap.min.js"></script>
+	<script src="../js/main.js"</script>
+</body>
+</html>
