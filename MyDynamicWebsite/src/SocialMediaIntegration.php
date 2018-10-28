@@ -1,10 +1,13 @@
 <?php
 if (isset($_POST['submit'])){
     $status = $_REQUEST['tweet'];
-    echo '<h2>The status is ' .$status .'</h2>';
 
+$consumerKey = 'xEGRrBMHHGMkgXSCwpqQyvD4X';
+$consumerSecret = 'ZpxWH8RA5igcnQQJYJxhYOShZ8c08Gr5WZYBdsdVDZ8fUvO9tq';
+$accessToken = '1055959410563076096-HYwBQIISR6WTC8CIo6VK4yJTpFPyfl';
+$accessTokenSecret = 'C9RPxHGKzDQHfeJBTKkfF6R2Dws0vqccoHE41M8TqhTrp';
+    
 require "../WebContent/lib/twitteroauth/autoload.php";
-require "../config.php"
     
 use Abraham\TwitterOAuth\TwitterOAuth;
 
@@ -12,9 +15,8 @@ $connection = new TwitterOAuth($consumerKey, $consumerSecret, $accessToken, $acc
 $content = $connection->get("account/verify_credentials");
 
 
-$postStatus = $connection->post("statuses/update", ["status" => "hello world from SocialMediaIntegration.php"]);
+$postStatus = $connection->post("statuses/update", ["status" => $status]);
 
-    echo '<h2>The tweet was sent. </h2>'
 }
 else{
     echo '<script>console.log("error")</script>';
